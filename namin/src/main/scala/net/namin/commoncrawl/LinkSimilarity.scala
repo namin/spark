@@ -38,15 +38,20 @@ object LinkSimilarity {
 
   def main(args: Array[String]) {
     if (args.length == 0) {
-      System.err.println("Usage: LinkSimilarity <host>")
+      System.err.println("Usage: LinkSimilarity <host> <urlFilter> <path>")
       System.exit(1)
     }
 
+    val urlFilter = if (args.length > 1) args(1) else ""
+    val path = if (args.length > 2) args(2) else "1341690166822/metadata-01849"
+
     val sc = new SparkContext(args(0), "Link Similarity", System.getenv("SPARK_HOME"), List(System.getenv("SPARK_NAMIN_JAR")))
 
-    val s = sc.sequenceFile[Text,Text]("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@aws-publicdatasets/common-crawl/parse-output/segment/1341690166822/metadata-01849")
+    val s = sc.sequenceFile[Text,Text]("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@aws-publicdatasets/common-crawl/parse-output/segment/" + path)
 
-    val el = s.first()
+    val sf = s.filter(_._1.toString contains urlFilter)
+
+    val el = sf.first()
     val hrefs = links(el)
     hrefs.foreach(println)
   }
