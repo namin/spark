@@ -56,7 +56,7 @@ object LinkSimilarity {
 	    links.iterator.asScala.map(_.getAsJsonObject).
             filter(_.get("type").getAsString == "a").
             map(_.get("href").getAsString).
-            filter(x => differentDomain(domain(x))).
+            filter(x => differentDomain(domain(x)) && !x.contains("?")).
             toList
           }
         }
@@ -91,5 +91,20 @@ object LinkSimilarity {
     }).filter(!_._2.isEmpty)
 
     h.foreach(println)
+
+    val i = h.map({case (key, m) => MyMap(key, m)})
+
+    i.saveAsTextFile("~/scratch/sim.json")
+  }
+
+  case class MyMap(val key: String, val m: Map[String, Int]) {
+    override def toString = {
+      key + " : " +
+      m.toSeq.sortBy({ case (ref, c) =>
+        c
+      }).map({case (ref, c) =>
+        "\"" + ref + "\" : " + c
+      }).mkString("[", ",", "]")
+    }
   }
 }
