@@ -27,7 +27,7 @@ object GenerateSite {
     val details =  e.getValue.getAsJsonArray.iterator.asScala.map({y =>
       val x = y.getAsJsonObject.entrySet.asScala.first
       (x.getKey, x.getValue.getAsInt)
-    }).toList
+    }).toIndexedSeq
     Entry(url, details)
   }
 
@@ -43,9 +43,23 @@ object GenerateSite {
 
     val s = sc.textFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-sim/" + segment)
 
-    val line = s.first()
-    println(parseLine(line))
+    val entries = s.map(parseLine)
+
+    entries.saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-sim/sites/" + segment + "/")
   }
 
-  case class Entry(url: String, details: List[(String, Int)])
+  def getUid(url: String): String = java.util.UUID.nameUUIDFromBytes(url.getBytes).toString
+
+  case class Entry(url: String, details: IndexedSeq[(String, Int)]) {
+    val uid = getUid(url)
+    override def toString = {
+      val sb = new StringBuilder()
+      sb.append("<li class='url' id='" + uid + "'><a name='" + uid + "' href='" + url + "'>" + url + "</a> (" + details.length + ")<ul class='details'>")
+      for ((ref, c) <- details) {
+        sb.append("<li class='ref'><a href='#" + getUid(ref) + "'>" + ref + "</a> (" + c + ")</li>")
+      }
+      sb.append("</ul></li>")
+      sb.toString
+    }
+  }
 }
