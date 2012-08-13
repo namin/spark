@@ -13,16 +13,20 @@ object LinkSimilarity {
   val jsonParser = new JsonParser()
 
   def domain(url: String): Option[String] = {
-    val uri = new URI(url)
-    val host = uri.getHost
-    if (host == null) return None
+    try {
+      val uri = new URI(url)
+      val host = uri.getHost
+      if (host == null) return None
 
-    val domainObj = InternetDomainName.from(host)
-    val domain = domainObj.topPrivateDomain.name
+      val domainObj = InternetDomainName.from(host)
+      val domain = domainObj.topPrivateDomain.name
 
-    if (domain == null) return None
+      if (domain == null) return None
 
-    Some(domain)
+      Some(domain)
+    } catch {
+      case _ => None
+    }
   }
 
   def next[A,B>:Null](obj: A)(next: (A => B)): B = {
