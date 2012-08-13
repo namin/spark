@@ -35,6 +35,12 @@ object LinkReverse {
             lnks = Utils.links(urlFilter)(md); toUrl <- lnks)
        yield (toUrl, fromUrl)).groupByKey.sortByKey(true)
 
-    g
+    g.map(x => Entry(x._1,x._2))
+  }
+
+  case class Entry(toUrl: String, fromUrls: Seq[String]) {
+    override def toString = {
+      toUrl + " " + fromUrls.mkString(" ")
+    }
   }
 }
