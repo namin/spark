@@ -23,9 +23,9 @@ object LinkSimilarity {
   def links(el: (Text, Text)): List[String] = {
     val md = el._2
     default {
-      next (jsonParser.parse(md.toString).getAsJsonObject) { json =>
-	next (json.getAsJsonObject("content")) { content =>
-	  next (content.getAsJsonArray("links")) { links =>
+      next[JsonObject, List[String]] (jsonParser.parse(md.toString).getAsJsonObject) { json =>
+	next[JsonObject, List[String]] (json.getAsJsonObject("content")) { content =>
+	  next[JsonArray, List[String]] (content.getAsJsonArray("links")) { links =>
 	    links.iterator.asScala.map(_.getAsJsonObject).
             filter(_.get("type").getAsString == "a").
             map(_.get("href").getAsString).
