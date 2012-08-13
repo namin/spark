@@ -20,8 +20,7 @@ object LinkReverseSite {
       val urls = line.split(" ")
       val uid = SiteUtils.getUid(urls(0))
 
-      // cannot use sc here!
-      sc.parallelize(List(line)).saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-live/linkrev/" + segment + "/" + uid + ".txt")
+      (new SparkContext("local", "Generate 1 Link Reverse Page", System.getenv("SPARK_HOME"), List(System.getenv("SPARK_NAMIN_JAR")))).parallelize(List(line)).saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-live/linkrev/" + segment + "/" + uid + ".txt")
     }
 
     System.exit(0)
