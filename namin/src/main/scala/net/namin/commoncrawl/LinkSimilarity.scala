@@ -99,7 +99,7 @@ object LinkSimilarity {
 
   case class MyMap(val key: String, val m: Map[String, Int]) {
     override def toString = {
-      key + " : " +
+      "\" + key + "\"" + " : " +
       m.toSeq.sortBy({ case (ref, c) =>
         c
       }).map({case (ref, c) =>
