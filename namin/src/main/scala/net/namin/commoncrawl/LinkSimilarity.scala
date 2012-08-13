@@ -81,6 +81,15 @@ object LinkSimilarity {
 
     val g = (for (el <- sf; url = el._1.toString; lnks = links(el); a <- lnks; b <- lnks; if a != b) yield (a, b)).groupByKey
 
-    g.foreach(println)
+    val h = g.map({ case (key, refs) =>
+      val bestRefs = refs.groupBy(x => x).map({case (ref, seq) =>
+        (ref, seq.size)
+      }).filter({case (ref, c) =>
+        c > 1
+      })
+      (key, bestRefs)
+    }).filter(!_._2.isEmpty)
+
+    h.foreach(println)
   }
 }
