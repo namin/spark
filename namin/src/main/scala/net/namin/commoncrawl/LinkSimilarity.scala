@@ -8,6 +8,34 @@ import com.google.gson._
 import scala.collection.JavaConverters._
 
 object LinkSimilarity {
+  val jsonParser = new JsonParser()
+
+  def next[A,B>:Null](obj: A)(next: (A => B)): B = {
+    if (obj == null) null
+    else next(obj)
+  }
+
+  def default[B>:Null](obj: B)(default: B): B = {
+    if (obj == null) default
+    else obj
+  }
+
+  def links(el: (Text, Text)): List[String] = {
+    val md = el._2
+    default {
+      next (jsonParser.parse(md.toString).getAsJsonObject) { json =>
+	next (json.getAsJsonObject("content")) { content =>
+	  next (content.getAsJsonArray("links")) { links =>
+	    links.iterator.asScala.map(_.getAsJsonObject).
+            filter(_.get("type").getAsString == "a").
+            map(_.get("href").getAsString).
+            toList
+          }
+        }
+      }
+    } (List())
+  }
+
   def main(args: Array[String]) {
     if (args.length == 0) {
       System.err.println("Usage: LinkSimilarity <host>")
@@ -19,14 +47,7 @@ object LinkSimilarity {
     val s = sc.sequenceFile[Text,Text]("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@aws-publicdatasets/common-crawl/parse-output/segment/1341690166822/metadata-01849")
 
     val el = s.first()
-    val md = el._2
-
-    val jsonParser = new JsonParser()
-
-    val json = jsonParser.parse(md.toString).getAsJsonObject
-    val links = json.getAsJsonObject("content").getAsJsonArray("links").iterator.asScala.map(_.getAsJsonObject).toList
-    val hrefs = links.filter(_.get("type").getAsString == "a").map(_.get("href").getAsString)
-
+    val hrefs = links(el)
     hrefs.foreach(println)
   }
 }
