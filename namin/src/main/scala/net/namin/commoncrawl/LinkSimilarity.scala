@@ -94,7 +94,7 @@ object LinkSimilarity {
 
     val i = h.map({case (key, m) => MyMap(key, m)})
 
-    i.saveAsTextFile("~/scratch/sim.json")
+    i.saveAsTextFile("scratch/sim.json")
   }
 
   case class MyMap(val key: String, val m: Map[String, Int]) {
