@@ -75,7 +75,7 @@ object LinkSimilarity {
 
     val sf = if (urlFilter == "") s else s.filter(_._1.toString contains urlFilter)
 
-    val g = (for (el <- sf; url = el._1.toString; href <- links(el)) yield (href, url)).groupByKey
+    val g = (for (el <- sf; url = el._1.toString; lnks = links(el); a <- lnks; b <- lnks; if a != b) yield (a, b)).groupByKey
 
     g.foreach(println)
   }
