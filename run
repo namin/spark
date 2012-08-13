@@ -39,6 +39,7 @@ export JAVA_OPTS
 CORE_DIR="$FWDIR/core"
 REPL_DIR="$FWDIR/repl"
 EXAMPLES_DIR="$FWDIR/examples"
+NAMIN_DIR="$FWDIR/namin"
 BAGEL_DIR="$FWDIR/bagel"
 
 # Build up classpath
@@ -48,6 +49,7 @@ CLASSPATH+=":$FWDIR/conf"
 CLASSPATH+=":$CORE_DIR/target/scala-$SCALA_VERSION/classes"
 CLASSPATH+=":$REPL_DIR/target/scala-$SCALA_VERSION/classes"
 CLASSPATH+=":$EXAMPLES_DIR/target/scala-$SCALA_VERSION/classes"
+CLASSPATH+=":$NAMIN_DIR/target/scala-$SCALA_VERSION/classes"
 for jar in `find $CORE_DIR/lib -name '*jar'`; do
   CLASSPATH+=":$jar"
 done
@@ -66,6 +68,11 @@ export CLASSPATH # Needed for spark-shell
 # The JAR file used in the examples.
 for jar in `find $EXAMPLES_DIR/target/scala-$SCALA_VERSION -name '*jar'`; do
   export SPARK_EXAMPLES_JAR="$jar"
+done
+
+# The JAR file used in the namin examples.
+for jar in `find $NAMIN_DIR/target/scala-$SCALA_VERSION -name '*jar'`; do
+  export SPARK_NAMIN_JAR="$jar"
 done
 
 if [ -n "$SCALA_HOME" ]; then

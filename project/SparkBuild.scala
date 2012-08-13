@@ -8,13 +8,15 @@ object SparkBuild extends Build {
   // "1.0.1" for Apache releases, or "0.20.2-cdh3u3" for Cloudera Hadoop.
   val HADOOP_VERSION = "0.20.205.0"
 
-  lazy val root = Project("root", file("."), settings = sharedSettings) aggregate(core, repl, examples, bagel)
+  lazy val root = Project("root", file("."), settings = sharedSettings) aggregate(core, repl, examples, namin, bagel)
 
   lazy val core = Project("core", file("core"), settings = coreSettings)
 
   lazy val repl = Project("repl", file("repl"), settings = replSettings) dependsOn (core)
 
   lazy val examples = Project("examples", file("examples"), settings = examplesSettings) dependsOn (core)
+
+  lazy val namin = Project("namin", file("namin"), settings = naminSettings) dependsOn (core)
 
   lazy val bagel = Project("bagel", file("bagel"), settings = bagelSettings) dependsOn (core)
 
@@ -70,6 +72,11 @@ object SparkBuild extends Build {
   def examplesSettings = sharedSettings ++ Seq(
     name := "spark-examples",
     libraryDependencies += "colt" % "colt" % "1.2.0"
+  )
+
+  def naminSettings = sharedSettings ++ Seq(
+    name := "spark-namin",
+    libraryDependencies += "com.google.code.gson" % "gson" % "2.2.2"
   )
 
   def bagelSettings = sharedSettings ++ Seq(name := "spark-bagel")
