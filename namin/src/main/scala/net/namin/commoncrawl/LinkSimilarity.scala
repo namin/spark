@@ -71,6 +71,8 @@ object LinkSimilarity {
     }
 
     val urlFilter = if (args.length > 1) args(1) else ""
+    // To get the list of valid segments with Tim Kay's aws tool:
+    // aws ls -1 aws-publicdatasets/common-crawl/parse-output/valid_segments/ | cut -d / -f 4
     val segment = if (args.length > 2) args(2) else "1341690166822"
     val metadata = if (args.length > 3) args(3) else "metadata-*" //"metadata-01849"
     val path = segment + "/" + metadata
