@@ -81,4 +81,9 @@ else
   SCALA=scala
 fi
 
+if [ -r ~/.awssecret ]; then
+  export AWS_ACCESS_KEY_ID=$(head -n 1 ~/.awssecret)
+  export AWS_SECRET_ACCESS_KEY=$(tail -n 1 ~/.awssecret)
+fi
+
 exec "$SCALA" -cp "$CLASSPATH" "$@"
