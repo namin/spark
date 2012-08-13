@@ -105,7 +105,7 @@ object LinkSimilarity {
       m.toSeq.sortBy({ case (ref, c) =>
         -c
       }).map({case (ref, c) =>
-        "\"" + ref + "\" : " + c
+        "{\"" + ref + "\" : " + c + "}"
       }).mkString("[", ",", "]") + ","
     }
   }
