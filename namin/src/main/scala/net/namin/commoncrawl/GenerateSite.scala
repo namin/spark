@@ -46,6 +46,8 @@ object GenerateSite {
     val entries = s.map(parseLine)
 
     entries.saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-sim/sites/" + segment + "/")
+
+    System.exit(0)
   }
 
   def getUid(url: String): String = java.util.UUID.nameUUIDFromBytes(url.getBytes).toString
