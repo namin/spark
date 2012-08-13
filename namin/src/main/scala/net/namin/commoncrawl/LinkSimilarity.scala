@@ -6,9 +6,24 @@ import spark.SparkContext._
 import org.apache.hadoop.io.Text
 import com.google.gson._
 import scala.collection.JavaConverters._
+import com.google.common.net.InternetDomainName
+import java.net.URI;
 
 object LinkSimilarity {
   val jsonParser = new JsonParser()
+
+  def domain(url: String): Option[String] = {
+    val uri = new URI(url)
+    val host = uri.getHost
+    if (host == null) return None
+
+    val domainObj = InternetDomainName.from(host)
+    val domain = domainObj.topPrivateDomain.name
+
+    if (domain == null) return None
+
+    Some(domain)
+  }
 
   def next[A,B>:Null](obj: A)(next: (A => B)): B = {
     if (obj == null) null
@@ -21,6 +36,14 @@ object LinkSimilarity {
   }
 
   def links(el: (Text, Text)): List[String] = {
+    val elDomain = domain(el._1.toString)
+    if (elDomain == None) return List()
+    val differentDomain = { dom: Option[String] =>
+      dom match {
+	case None => false
+	case Some(d) => d != elDomain.get
+      }
+    }
     val md = el._2
     default {
       next[JsonObject, List[String]] (jsonParser.parse(md.toString).getAsJsonObject) { json =>
@@ -29,6 +52,7 @@ object LinkSimilarity {
 	    links.iterator.asScala.map(_.getAsJsonObject).
             filter(_.get("type").getAsString == "a").
             map(_.get("href").getAsString).
+            filter(x => differentDomain(domain(x))).
             toList
           }
         }
@@ -49,10 +73,10 @@ object LinkSimilarity {
 
     val s = sc.sequenceFile[Text,Text]("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@aws-publicdatasets/common-crawl/parse-output/segment/" + path)
 
-    val sf = s.filter(_._1.toString contains urlFilter)
+    val sf = if (urlFilter == "") s else s.filter(_._1.toString contains urlFilter)
 
-    val el = sf.first()
-    val hrefs = links(el)
-    hrefs.foreach(println)
+    val g = (for (el <- sf; url = el._1.toString; href <- links(el)) yield (href, url)).groupByKey
+
+    g.foreach(println)
   }
 }
