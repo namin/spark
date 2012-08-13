@@ -16,7 +16,7 @@ object LinkReverse {
     val segment = if (args.length > 2) args(2) else "1341690166822"
     val metadata = if (args.length > 3) args(3) else "metadata-01849"
 
-    val sc = new SparkContext(args(0), "Link Similarity", System.getenv("SPARK_HOME"), List(System.getenv("SPARK_NAMIN_JAR")))
+    val sc = new SparkContext(args(0), "Link Reverse", System.getenv("SPARK_HOME"), List(System.getenv("SPARK_NAMIN_JAR")))
 
     val g = go(sc, urlFilter, segment, metadata)
 
