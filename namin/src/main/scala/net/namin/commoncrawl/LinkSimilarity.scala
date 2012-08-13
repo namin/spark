@@ -94,7 +94,9 @@ object LinkSimilarity {
 
     val i = h.map({case (key, m) => MyMap(key, m)})
 
-    i.saveAsTextFile("../scratch/sim")
+    i.saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-sim/")
+
+    System.exit(0)
   }
 
   case class MyMap(val key: String, val m: Map[String, Int]) {
