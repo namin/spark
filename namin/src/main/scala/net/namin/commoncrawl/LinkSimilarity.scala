@@ -66,12 +66,14 @@ object LinkSimilarity {
 
   def main(args: Array[String]) {
     if (args.length == 0) {
-      System.err.println("Usage: LinkSimilarity <host> <urlFilter> <path>")
+      System.err.println("Usage: LinkSimilarity <host> <urlFilter> <segment> <metadata>")
       System.exit(1)
     }
 
     val urlFilter = if (args.length > 1) args(1) else ""
-    val path = if (args.length > 2) args(2) else "1341690166822/metadata-01849"
+    val segment = if (args.length > 2) args(2) else "1341690166822"
+    val metadata = if (args.length > 3) args(3) else "metadata-*" //"metadata-01849"
+    val path = segment + "/" + metadata
 
     val sc = new SparkContext(args(0), "Link Similarity", System.getenv("SPARK_HOME"), List(System.getenv("SPARK_NAMIN_JAR")))
 
@@ -94,7 +96,7 @@ object LinkSimilarity {
 
     val i = h.map({case (key, m) => MyMap(key, m)})
 
-    i.saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-sim/")
+    i.saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-sim/" + segment + "/")
 
     System.exit(0)
   }
