@@ -101,7 +101,7 @@ object LinkSimilarity {
     override def toString = {
       "\"" + key + "\"" + " : " +
       m.toSeq.sortBy({ case (ref, c) =>
-        c
+        -c
       }).map({case (ref, c) =>
         "\"" + ref + "\" : " + c
       }).mkString("[", ",", "]")
