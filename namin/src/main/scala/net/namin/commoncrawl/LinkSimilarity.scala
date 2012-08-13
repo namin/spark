@@ -106,7 +106,7 @@ object LinkSimilarity {
         -c
       }).map({case (ref, c) =>
         "\"" + ref + "\" : " + c
-      }).mkString("[", ",", "]")
+      }).mkString("[", ",", "]") + ","
     }
   }
 }
