@@ -14,7 +14,7 @@ object LinkReverseSite {
 
     val sc = new SparkContext(args(0), "Generate Link Reverse Site", System.getenv("SPARK_HOME"), List(System.getenv("SPARK_NAMIN_JAR")))
 
-    val s = sc.textFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-rev/" + segment)
+    val s = sc.textFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-rev/" + segment).cache
 
     for (line <- s) {
       val urls = line.split(" ")
