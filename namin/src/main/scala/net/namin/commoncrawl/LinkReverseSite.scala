@@ -22,7 +22,7 @@ object LinkReverseSite {
 
     for (line <- s) {
       val urls = line.split(" ")
-      if (reUrlFilter(urls(0))) {
+      if (!urls.isEmpty && reUrlFilter(urls(0))) { // todo: urls shouldn't be empty if data prune correctly upstream
         val uid = SiteUtils.getUid(urls(0))
         SiteUtils.s3save("namin-live", "linkrev/" + segment + "/" + uid + ".txt", line)
       }
