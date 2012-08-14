@@ -16,11 +16,15 @@ object LinkReverseSite {
 
     val s = sc.textFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-rev/" + segment)
 
+    val creds = new org.jets3t.service.security.AWSCredentials(System.getenv("AWS_ACCESS_KEY_ID"), System.getenv("AWS_SECRET_ACCESS_KEY"))
+    val s3service = sc.broadcast(new org.jets3t.service.impl.rest.httpclient.RestS3Service(creds))
+    val bucket = sc.broadcast(s3service.value.getBucket("namin-live"))
+
     for (line <- s) {
       val urls = line.split(" ")
       val uid = SiteUtils.getUid(urls(0))
-
-      (new SparkContext("local", "Generate 1 Link Reverse Page", System.getenv("SPARK_HOME"), List(System.getenv("SPARK_NAMIN_JAR")))).parallelize(List(line)).saveAsTextFile("s3n://" + System.getenv("AWS_ACCESS_KEY_ID") + ":" + System.getenv("AWS_SECRET_ACCESS_KEY") + "@namin-live/linkrev/" + segment + "/" + uid + ".txt")
+      val obj = new org.jets3t.service.model.S3Object("linkrev/" + segment + "/" + uid + ".txt", line)
+      s3service.value.putObject(bucket.value, obj)
     }
 
     System.exit(0)
